@@ -91,6 +91,24 @@
   will-change: transform, opacity;
 }
 
+.falling-leaves {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.falling-leaf {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: auto;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
 .hero-scroll {
   position: absolute;
   bottom: 0;

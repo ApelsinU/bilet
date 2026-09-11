@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
-import monkey_preview from './assets/monkey_preview.webp'
+import monkey_preview from './assets/monkey_preview.jpg'
 import monkey_think from './assets/monkey_think.jpg'
 import autumn from './assets/autumn.jpg'
 import monkey_cook from './assets/monkey_cook.jpg'
@@ -19,6 +19,7 @@ import monkey_eat from './assets/monkey_eat.jpg'
 import monkey_eat2 from './assets/monkey_eat2.jpg'
 import monkeys_kiss from './assets/monkeys_kiss.jpg'
 import { launchConfetti } from './confetti'
+import FallingLeaves from './FallingLeaves'
 import './App.css'
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
@@ -148,7 +149,7 @@ const initialBlocks: Block[] = [
   {
     img: monkey_eat2,
     alt: 'Обезьянка кушает',
-    title: 'Приятного аппетита! Это должно быть вкусно.',
+    title: 'Это должно быть вкусно. Приятного аппетита!',
     heroScroll: true,
     hidden: true,
   },
@@ -250,8 +251,9 @@ function App() {
   }, [])
 
   return (
-    <div ref={root}>
-      {blocks
+    <>
+      <div ref={root}>
+        {blocks
         .filter((block) => !block.hidden)
         .map((block) => (
         <section className="section" key={block.alt}>
@@ -289,7 +291,9 @@ function App() {
           )}
         </section>
       ))}
-    </div>
+      </div>
+      <FallingLeaves />
+    </>
   )
 }
 
