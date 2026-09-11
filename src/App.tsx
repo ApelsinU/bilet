@@ -1,25 +1,210 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import block1 from './assets/monkey_think.jpg'
-import block2 from './assets/monkey_cook.jpg'
-import block3 from './assets/monkeys_drive.jpg'
-import block4 from './assets/monkey_forest.jpg'
-import block5 from './assets/monkey_with_deer.webp'
-import block6 from './assets/monkeys_kiss.jpg'
-import block7 from './assets/monkeys_drive.jpg'
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
+import monkey_preview from './assets/monkey_preview.webp'
+import monkey_think from './assets/monkey_think.jpg'
+import autumn from './assets/autumn.jpg'
+import monkey_cook from './assets/monkey_cook.jpg'
+import monkey_phone from './assets/monkey_phone.jpg'
+import monkey_happy from './assets/monkey_happy.jpg'
+import monkey_dress from './assets/monkey_dress.jpg'
+import monkey_flower from './assets/monkey_flower.jpg'
+import monkey_drive from './assets/monkey_drive.jpg'
+import monkey_look from './assets/monkey_look.jpg'
+import monkey_forest from './assets/monkey_forest.jpg'
+import two_monkey_look2 from './assets/two_monkey_look2.jpg'
+import monkey_with_deer from './assets/monkey_with_deer.webp'
+import monkey_eat from './assets/monkey_eat.jpg'
+import monkey_eat2 from './assets/monkey_eat2.jpg'
+import monkeys_kiss from './assets/monkeys_kiss.jpg'
+import { launchConfetti } from './confetti'
 import './App.css'
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
+
+type Block = {
+  img: string
+  alt: string
+  title: string
+  heroScroll?: boolean
+  buttons?: { id: string; text: string }[]
+  hidden: boolean
+}
+
+const initialBlocks: Block[] = [
+  {
+    img: monkey_preview,
+    alt: 'Начало',
+    title:
+        'Один день из жизни Обезьянки',
+    heroScroll: true,
+    hidden: false,
+  },
+  {
+    img: monkey_think,
+    alt: 'Обезьянка скучает',
+    title:
+      'Обезьянка была дома и немного скучала. Сегодня ведь выходной, надо обязательно чем то заняться.',
+    heroScroll: true,
+    hidden: false,
+  },
+  {
+    img: autumn,
+    alt: 'Любимая пора года у Обезьянки',
+    title:
+      'На улице была ранняя осень, и слегка прохладно, но обезьянка любила такую погоду. Ведь осенью, деревья с каждым днём становятся всё красивее, как будто неведомый художник каждую ночь выходит на работу и раскрашивает целые парки в красочную палитру осенних цветов.',
+    heroScroll: true,
+    hidden: false,
+  },
+  {
+    img: monkey_cook,
+    alt: 'Обезьянка готовит плов',
+    title:
+      'Но вернемся к нашей Обезьянке. Сидеть без дела она не привыкла, поэтому уже прибралась в домике и готовила свой фирменный плов.',
+    heroScroll: true,
+    hidden: false,
+  },
+  {
+    img: monkey_phone,
+    alt: 'Обезьянка разговаривает по телефону',
+    title:
+      'Как вдруг - телефонный звонок. Кто же это? Обезьянку приглашает погулять другая обезьянка! Хммм - это звучит заманчиво, что же делать?',
+    buttons: [{
+      id: 'accept',
+      text: 'Cогласиться',
+    },
+    {
+      id: 'decline',
+      text: 'Отказаться',
+    }
+    ],
+    heroScroll: true,
+    hidden: false,
+  },
+  {
+    img: monkey_happy,
+    alt: 'Обезьянка сказала ДА!',
+    title: 'Она сказала ДА!!! ... То есть, она просто согласилась сходить на свидание с другой обезьянкой, это конечно просто прогулка, не будем торопить события...',
+    heroScroll: true,
+    hidden: true,
+  },
+  {
+    img: monkey_dress,
+    alt: 'Обезьянка наряжается',
+    title: 'Теперь нужно нарядиться. Обезьянка, долго не думая, надела свой лучший наряд. Как уже было сказано ранее, за окном стояла осенняя погода, поэтому наша предусмотрительная героиня взяла с собой теплые вещи.',
+    heroScroll: true,
+    hidden: true,
+  },
+  {
+    img: monkey_flower,
+    alt: 'Обезьянка получает цветок',
+    title: 'Вот и подошло время свидания! Какой красивый цветок! Надо скорее бежать ставить его в вазу.',
+    heroScroll: true,
+    hidden: true,
+  },
+  {
+    img: monkey_drive,
+    alt: 'Обезьянка отправляется в путешествие',
+    title: 'И вот, наконец, две Обезьянки отправляются в путешествие. Нужно обязательно включить любимую музыку!',
+    heroScroll: true,
+    hidden: true,
+  },
+  {
+    img: monkey_look,
+    alt: 'Обезьянки приехали',
+    title: 'За музыкой и неспешной беседой, наши Обезьянки приехали в место назначения - что же их тут ждет?',
+    heroScroll: true,
+    hidden: true,
+  },
+  {
+    img: monkey_forest,
+    alt: 'Обезьянка гуляет по лесу',
+    title: 'Наша героиня шла по лесу и наслаждалась природой, а вторая обезьянка фотографировала её. "Какая же она красивая!" - подумала вторая обезьянка.',
+    heroScroll: true,
+    hidden: true,
+  },
+  {
+    img: two_monkey_look2,
+    alt: 'Обезьянки увидели что-то интересное',
+    title: 'Ух ты, а кто это там пробежал? И лапы, и хвост, и усы... Надо подойти поближе, чтобы узнать кто здесь живет.',
+    heroScroll: true,
+    hidden: true,
+  },
+  {
+    img: monkey_with_deer,
+    alt: 'Обезьянка знакомится с олененком',
+    title: 'Да это же Олененок! И он, кажется, не против познакомиться - какой милый!',
+    heroScroll: true,
+    hidden: true,
+  },
+  {
+    img: monkey_eat,
+    alt: 'Обезьянка проголодалась',
+    title: 'Ох, кажется, Обезьянки проголодались! Это не удивительно, ведь они так много прыгали. Нужно скорее искать обед!',
+    heroScroll: true,
+    hidden: true,
+  },
+  {
+    img: monkey_eat2,
+    alt: 'Обезьянка кушает',
+    title: 'Приятного аппетита! Это должно быть вкусно.',
+    heroScroll: true,
+    hidden: true,
+  },
+  {
+    img: monkeys_kiss,
+    alt: 'Обезьянки счастливые',
+    title: 'Вот и подошло к концу наше путешествие! Обезьянки едут счастливые домой, ведь они хорошо провели время вместе - гуляли по лесу, видели много новых зверей и вкусно кушали. Выходной удался!',
+    hidden: true,
+  },
+]
 
 function App() {
   const root = useRef<HTMLDivElement>(null)
+  const [blocks, setBlocks] = useState<Block[]>(initialBlocks)
+
+  const handleButtonClick = async (id: string, element: HTMLElement) => {
+    if (id === 'accept') {
+      const section = element.closest('.section')
+      setBlocks((prev) => prev.map((block) => ({ ...block, hidden: false })))
+      await launchConfetti(element)
+      const nextSection = section?.nextElementSibling as HTMLElement | null
+      if (nextSection) {
+        gsap.to(window, {
+          scrollTo: { y: nextSection, autoKill: false },
+          duration: 1.4,
+          ease: 'power2.inOut',
+        })
+      }
+    }
+  }
+
+  const handleDeclineHover = (element: HTMLElement, clientX: number, clientY: number) => {
+    const rect = element.getBoundingClientRect()
+    const dirX = rect.left + rect.width / 2 - clientX
+    const dirY = rect.top + rect.height / 2 - clientY
+    const len = Math.hypot(dirX, dirY) || 1
+    const margin = 16
+    const maxX = window.innerWidth - rect.width - margin
+    const maxY = window.innerHeight - rect.height - margin
+    const targetX = Math.min(maxX, Math.max(margin, rect.left + (dirX / len) * 160))
+    const targetY = Math.min(maxY, Math.max(margin, rect.top + (dirY / len) * 160))
+
+    gsap.to(element, {
+      x: `+=${targetX - rect.left}`,
+      y: `+=${targetY - rect.top}`,
+      rotation: `+=${(Math.random() - 0.5) * 80}`,
+      duration: 0.35,
+      ease: 'power2.out',
+    })
+  }
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const heroTl = gsap.timeline()
       heroTl
-        .from('.block1 .section-inner', {
+        .from('.section:first-of-type .section-inner', {
           y: 80,
           opacity: 0,
           duration: 1.1,
@@ -33,7 +218,8 @@ function App() {
         )
 
       gsap.utils
-        .toArray<HTMLElement>(['.block2', '.block3', '.block4', '.block5', '.block6'])
+        .toArray<HTMLElement>('.section')
+        .slice(1)
         .forEach((section) => {
           gsap.from(section.querySelector('.section-inner'), {
             y: 80,
@@ -65,67 +251,44 @@ function App() {
 
   return (
     <div ref={root}>
-      <section className="section block1">
-        <img className="section-img" src={block1} alt="Обезьянка скучает" />
-        <div className="section-inner">
-          <p className="section-title">
-            Обезьянка была дома и немного скучала.
-            На улице была ранняя осень, и слегка прохладно,
-            но обезьянка любила такую погоду.
-          </p>
-        </div>
-        <div className="hero-scroll" aria-hidden="true">
-          <span className="hero-scroll__line" />
-        </div>
-        </section>
-
-        <section className="section block2">
-            <img className="section-img" src={block2} alt="Обезьянка отправляется в путешествие" />
-            <div className="section-inner">
-                <p className="section-title">
-                    Сидеть без дела она не привыкла,
-                    поэтому прибиралась в своем жилище
-                    и готовила свой вкуснейший фирменный плов.
-                </p>
+      {blocks
+        .filter((block) => !block.hidden)
+        .map((block) => (
+        <section className="section" key={block.alt}>
+          <img className="section-img" src={block.img} alt={block.alt} />
+          <div className="section-inner">
+            <p className="section-title">{block.title}</p>
+            {block.buttons && (
+              <div className="section-buttons">
+                {block.buttons.map((button) => (
+                  <button
+                    className="section-button"
+                    key={button.id}
+                    onClick={(event) => handleButtonClick(button.id, event.currentTarget)}
+                    onMouseEnter={
+                      button.id === 'decline'
+                        ? (event) =>
+                            handleDeclineHover(
+                              event.currentTarget,
+                              event.clientX,
+                              event.clientY,
+                            )
+                        : undefined
+                    }
+                  >
+                    {button.text}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          {block.heroScroll && (
+            <div className="hero-scroll" aria-hidden="true">
+              <span className="hero-scroll__line" />
             </div>
+          )}
         </section>
-
-      <section className="section block3">
-        <img className="section-img" src={block3} alt="Обезьянка отправляется в путешествие" />
-        <div className="section-inner">
-          <p className="section-title">Долго не думая, наша Обезьянка отправляется в путешествие!</p>
-        </div>
-      </section>
-
-      <section className="section block4">
-        <img className="section-img" src={block4} alt="Обезьянка гуляет по лесу" />
-        <div className="section-inner">
-          <p className="section-title">
-            Обезьянка шла по лесу и наслаждалась природой.
-          </p>
-        </div>
-      </section>
-
-      <section className="section block5">
-        <img className="section-img" src={block5} alt="Обезьянка знакомится с олененком" />
-        <div className="section-inner">
-          <p className="section-title">Обезьянка знакомится с оленёнком</p>
-        </div>
-      </section>
-
-      <section className="section block6">
-        <img className="section-img" src={block6} alt="Обезьянка кушает" />
-        <div className="section-inner">
-          <p className="section-title">Обезьянка кушает</p>
-        </div>
-      </section>
-
-      <section className="section block7">
-        <img className="section-img" src={block7} alt="Обезьянка едет счастливая домой" />
-        <div className="section-inner">
-          <p className="section-title">Обезьянка едет счастливая домой</p>
-        </div>
-      </section>
+      ))}
     </div>
   )
 }
