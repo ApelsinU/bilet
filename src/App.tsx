@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState, useEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
@@ -19,6 +19,7 @@ import monkey_eat from './assets/monkey_eat.jpg'
 import monkey_eat2 from './assets/monkey_eat2.jpg'
 import monkeys_kiss from './assets/monkeys_kiss.jpg'
 import { launchConfetti } from './confetti'
+import { launchHearts } from './hearts'
 import FallingLeaves from './FallingLeaves'
 import './App.css'
 
@@ -31,6 +32,7 @@ type Block = {
   heroScroll?: boolean
   buttons?: { id: string; text: string }[]
   hidden: boolean
+  start?: boolean
 }
 
 const initialBlocks: Block[] = [
@@ -39,8 +41,14 @@ const initialBlocks: Block[] = [
     alt: 'Начало',
     title:
         'Один день из жизни Обезьянки',
-    heroScroll: true,
+    buttons: [
+      {
+        id: 'start',
+        text: 'Начать',
+      },
+    ],
     hidden: false,
+    start: true,
   },
   {
     img: monkey_think,
@@ -48,6 +56,7 @@ const initialBlocks: Block[] = [
     title:
       'Обезьянка была дома и немного скучала. Сегодня ведь выходной, надо обязательно чем то заняться.',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: false,
   },
   {
@@ -56,6 +65,7 @@ const initialBlocks: Block[] = [
     title:
       'На улице была ранняя осень, и слегка прохладно, но обезьянка любила такую погоду. Ведь осенью, деревья с каждым днём становятся всё красивее, как будто неведомый художник каждую ночь выходит на работу и раскрашивает целые парки в красочную палитру осенних цветов.',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: false,
   },
   {
@@ -64,6 +74,7 @@ const initialBlocks: Block[] = [
     title:
       'Но вернемся к нашей Обезьянке. Сидеть без дела она не привыкла, поэтому уже прибралась в домике и готовила свой фирменный плов.',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: false,
   },
   {
@@ -88,6 +99,7 @@ const initialBlocks: Block[] = [
     alt: 'Обезьянка сказала ДА!',
     title: 'Она сказала ДА!!! ... То есть, она просто согласилась сходить на свидание с другой обезьянкой, это конечно просто прогулка, не будем торопить события...',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
   },
   {
@@ -95,6 +107,7 @@ const initialBlocks: Block[] = [
     alt: 'Обезьянка наряжается',
     title: 'Теперь нужно нарядиться. Обезьянка, долго не думая, надела свой лучший наряд. Как уже было сказано ранее, за окном стояла осенняя погода, поэтому наша предусмотрительная героиня взяла с собой теплые вещи.',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
   },
   {
@@ -102,6 +115,7 @@ const initialBlocks: Block[] = [
     alt: 'Обезьянка получает цветок',
     title: 'Вот и подошло время свидания! Какой красивый цветок! Надо скорее бежать ставить его в вазу.',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
   },
   {
@@ -109,6 +123,7 @@ const initialBlocks: Block[] = [
     alt: 'Обезьянка отправляется в путешествие',
     title: 'И вот, наконец, две Обезьянки отправляются в путешествие. Нужно обязательно включить любимую музыку!',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
   },
   {
@@ -116,6 +131,7 @@ const initialBlocks: Block[] = [
     alt: 'Обезьянки приехали',
     title: 'За музыкой и неспешной беседой, наши Обезьянки приехали в место назначения - что же их тут ждет?',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
   },
   {
@@ -123,6 +139,7 @@ const initialBlocks: Block[] = [
     alt: 'Обезьянка гуляет по лесу',
     title: 'Наша героиня шла по лесу и наслаждалась природой, а вторая обезьянка фотографировала её. "Какая же она красивая!" - подумала вторая обезьянка.',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
   },
   {
@@ -130,6 +147,7 @@ const initialBlocks: Block[] = [
     alt: 'Обезьянки увидели что-то интересное',
     title: 'Ух ты, а кто это там пробежал? И лапы, и хвост, и усы... Надо подойти поближе, чтобы узнать кто здесь живет.',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
   },
   {
@@ -137,6 +155,7 @@ const initialBlocks: Block[] = [
     alt: 'Обезьянка знакомится с олененком',
     title: 'Да это же Олененок! И он, кажется, не против познакомиться - какой милый!',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
   },
   {
@@ -144,6 +163,7 @@ const initialBlocks: Block[] = [
     alt: 'Обезьянка проголодалась',
     title: 'Ох, кажется, Обезьянки проголодались! Это не удивительно, ведь они так много прыгали. Нужно скорее искать обед!',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
   },
   {
@@ -151,12 +171,17 @@ const initialBlocks: Block[] = [
     alt: 'Обезьянка кушает',
     title: 'Это должно быть вкусно. Приятного аппетита!',
     heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
   },
   {
     img: monkeys_kiss,
     alt: 'Обезьянки счастливые',
     title: 'Вот и подошло к концу наше путешествие! Обезьянки едут счастливые домой, ведь они хорошо провели время вместе - гуляли по лесу, видели много новых зверей и вкусно кушали. Выходной удался!',
+    buttons: [
+      { id: 'heart', text: '❤' },
+      { id: 'end', text: 'Конец' },
+    ],
     hidden: true,
   },
 ]
@@ -165,19 +190,39 @@ function App() {
   const root = useRef<HTMLDivElement>(null)
   const [blocks, setBlocks] = useState<Block[]>(initialBlocks)
 
+  const scrollToNext = (section: Element | null) => {
+    const nextSection = section?.nextElementSibling as HTMLElement | null
+    if (nextSection) {
+      gsap.to(window, {
+        scrollTo: { y: nextSection, autoKill: false },
+        duration: 1.4,
+        ease: 'power2.inOut',
+      })
+    }
+  }
+
+  const scrollToTop = () => {
+    const firstSection = root.current?.firstElementChild as HTMLElement | null
+    if (firstSection) {
+      gsap.to(window, {
+        scrollTo: { y: firstSection, autoKill: false },
+        duration: 1.4,
+        ease: 'power2.inOut',
+      })
+    }
+  }
+
   const handleButtonClick = async (id: string, element: HTMLElement) => {
+    const section = element.closest('.section')
     if (id === 'accept') {
-      const section = element.closest('.section')
       setBlocks((prev) => prev.map((block) => ({ ...block, hidden: false })))
-      await launchConfetti(element)
-      const nextSection = section?.nextElementSibling as HTMLElement | null
-      if (nextSection) {
-        gsap.to(window, {
-          scrollTo: { y: nextSection, autoKill: false },
-          duration: 1.4,
-          ease: 'power2.inOut',
-        })
-      }
+      launchConfetti(element)
+      await new Promise((resolve) => setTimeout(resolve, 800))
+      scrollToNext(section)
+    } else if (id === 'start') {
+      scrollToNext(section)
+    } else if (id === 'heart') {
+      launchHearts(element)
     }
   }
 
@@ -250,47 +295,141 @@ function App() {
     return () => ctx.revert()
   }, [])
 
+  useEffect(() => {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual'
+    }
+    window.scrollTo(0, 0)
+  }, [])
+
   return (
     <>
       <div ref={root}>
-        {blocks
-        .filter((block) => !block.hidden)
-        .map((block) => (
-        <section className="section" key={block.alt}>
-          <img className="section-img" src={block.img} alt={block.alt} />
-          <div className="section-inner">
-            <p className="section-title">{block.title}</p>
-            {block.buttons && (
-              <div className="section-buttons">
-                {block.buttons.map((button) => (
-                  <button
-                    className="section-button"
-                    key={button.id}
-                    onClick={(event) => handleButtonClick(button.id, event.currentTarget)}
-                    onMouseEnter={
-                      button.id === 'decline'
-                        ? (event) =>
-                            handleDeclineHover(
-                              event.currentTarget,
-                              event.clientX,
-                              event.clientY,
-                            )
-                        : undefined
-                    }
-                  >
-                    {button.text}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          {block.heroScroll && (
-            <div className="hero-scroll" aria-hidden="true">
-              <span className="hero-scroll__line" />
-            </div>
-          )}
-        </section>
-      ))}
+{blocks
+          .filter((block) => !block.hidden)
+          .map((block) => {
+            const buttonsContent = block.buttons?.map((button) =>
+                  button.id === 'next' ? (
+                    <button
+                      className="section-next"
+                      key={button.id}
+                      onClick={(event) =>
+                        scrollToNext(event.currentTarget.closest('.section'))
+                      }
+                    >
+                      <span>{button.text}</span>
+                      <svg
+                        className="section-next__icon"
+                        viewBox="0 0 24 24"
+                        width="16"
+                        height="16"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M5 12h13" />
+                        <path d="M12 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  ) : button.id === 'end' ? (
+                    <button
+                      className="section-button section-button--end"
+                      key={button.id}
+                      onClick={scrollToTop}
+                    >
+                      <span>{button.text}</span>
+                    </button>
+                  ) : (
+                    <button
+                      className={
+                        button.id === 'heart'
+                          ? 'section-button section-button--heart'
+                          : 'section-button'
+                      }
+                      key={button.id}
+                      onClick={(event) =>
+                        handleButtonClick(button.id, event.currentTarget)
+                      }
+                      onMouseEnter={
+                        button.id === 'decline'
+                          ? (event) =>
+                              handleDeclineHover(
+                                event.currentTarget,
+                                event.clientX,
+                                event.clientY,
+                              )
+                          : undefined
+                      }
+                    >
+                      <span>{button.text}</span>
+                      {button.id === 'start' && (
+                        <svg
+                          className="section-button__icon"
+                          viewBox="0 0 24 24"
+                          width="22"
+                          height="22"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M12 2v13" />
+                          <path d="M5 11l7 7 7-7" />
+                        </svg>
+                      )}
+                    </button>
+                  ),
+                )
+
+            const buttons = buttonsContent && (
+              <div className="section-buttons">{buttonsContent}</div>
+            )
+
+            const title = (
+              <p className="section-title">{block.title}</p>
+            )
+
+            return (
+              <section
+                className={`section${block.start ? ' section--start' : ''}${
+                  block.buttons?.some((button) => button.id === 'end')
+                    ? ' section--end'
+                    : ''
+                }`}
+                key={block.alt}
+              >
+                {block.start ? (
+                  <>
+                    <div className="section-inner">{title}</div>
+                    <img className="section-img" src={block.img} alt={block.alt} />
+                    {buttons}
+                  </>
+                ) : block.buttons?.some((button) => button.id === 'end') ? (
+                  <>
+                    <div className="section-inner">{title}</div>
+                    <img className="section-img" src={block.img} alt={block.alt} />
+                    <div className="section-buttons">{buttonsContent}</div>
+                  </>
+                ) : (
+                  <>
+                    <img className="section-img" src={block.img} alt={block.alt} />
+                    <div className="section-inner">
+                      {title}
+                      {buttons}
+                    </div>
+                  </>
+                )}
+                {block.heroScroll && (
+                  <div className="hero-scroll" aria-hidden="true">
+                    <span className="hero-scroll__line" />
+                  </div>
+                )}
+              </section>
+            )
+          })}
       </div>
       <FallingLeaves />
     </>
