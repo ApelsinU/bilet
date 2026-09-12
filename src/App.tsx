@@ -38,6 +38,8 @@ type Block = {
   start?: boolean
 }
 
+const ORNAMENTS = ['🍁', '🌿', '🍂']
+
 const initialBlocks: Block[] = [
   {
     img: monkey_preview,
@@ -68,7 +70,7 @@ const initialBlocks: Block[] = [
     title:
       'На улице была ранняя осень, и слегка прохладно, но обезьянка любила такую погоду. Ведь осенью, деревья с каждым днём становятся всё красивее, как будто неведомый художник каждую ночь выходит на работу и раскрашивает целые парки в красочную палитру осенних цветов.',
     heroScroll: true,
-    buttons: [{ id: 'next', text: 'дальше' }],
+    buttons: [{ id: 'next', text: 'Я календарь, переверну...' }],
     hidden: false,
   },
   {
@@ -108,7 +110,7 @@ const initialBlocks: Block[] = [
   {
     img: monkey_dress,
     alt: 'Обезьянка наряжается',
-    title: 'Теперь нужно нарядиться. Обезьянка, долго не думая, надела свой лучший наряд. Как уже было сказано ранее, за окном стояла осенняя погода, поэтому наша предусмотрительная героиня взяла с собой теплые вещи.',
+    title: 'Теперь нужно нарядиться. Обезьянка, долго не думая, надела свой лучший наряд. Как уже было сказано ранее, за окном осень уже вступила в свои законные права, поэтому наша предусмотрительная героиня взяла с собой теплые вещи и термос с горячим чаем.',
     heroScroll: true,
     buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
@@ -164,7 +166,7 @@ const initialBlocks: Block[] = [
   {
     img: alpaks,
     alt: 'Альпака',
-    title: 'А это что за звери? Говорят "Аль Пака" - иатальянцы, наверное... Основательно они подготовились к холодам - и шапки, и шубы себе пошили. Нужно срочно потрогать их!',
+    title: 'А это что за звери? Говорят "Аль Пака" - итальянцы, наверное... Основательно они подготовились к холодам - и шапки, и шубы себе пошили. Нужно срочно потрогать их!',
     heroScroll: true,
     buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
@@ -172,7 +174,7 @@ const initialBlocks: Block[] = [
   {
     img: monkey_kapibara,
     alt: 'Обезьянки и капибара',
-    title: 'Эх, вот бы еще Капибару увидеть... Жаль, но наш климат для них слишком не комфортный. Но мы всё таки представим, что наши герои встретили и этих чудесных животных.',
+    title: 'Эх, вот бы еще Капибару увидеть... Жаль, но наш климат для них не слишком комфортный. Но мы всё таки представим, что наши герои встретили и этих чудесных животных.',
     heroScroll: true,
     buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
@@ -180,7 +182,7 @@ const initialBlocks: Block[] = [
   {
     img: monkey_eat,
     alt: 'Обезьянка проголодалась',
-    title: 'Ох, кажется, Обезьянки проголодались! Это не удивительно, ведь они так много прыгали. Нужно скорее искать обед!',
+    title: 'Ох, кажется, Обезьянки проголодались! Это не удивительно, ведь они так много бегали и прыгали. Нужно скорее искать обед!',
     heroScroll: true,
     buttons: [{ id: 'next', text: 'обед!' }],
     hidden: true,
@@ -188,7 +190,7 @@ const initialBlocks: Block[] = [
   {
     img: monkey_eat2,
     alt: 'Обезьянка кушает',
-    title: 'Наши Обезьянки удобно расположились под раскидистым деревом и, наслаждаясь прекрасным видом дикой природы, приступили к трапезе. Это должно быть вкусно. Приятного аппетита!',
+    title: 'Наши Обезьянки удобно расположились под раскидистым деревом, и, наслаждаясь прекрасным видом дикой природы, приступили к трапезе. Это должно быть вкусно. Приятного аппетита!',
     heroScroll: true,
     buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
@@ -197,10 +199,7 @@ const initialBlocks: Block[] = [
     img: monkeys_kiss,
     alt: 'Обезьянки счастливые',
     title: 'Вот и подошло к концу наше путешествие! Обезьянки едут счастливые домой, ведь они хорошо провели время вместе - гуляли по лесу, видели много новых зверей и вкусно кушали. Выходной удался!',
-    buttons: [
-      { id: 'heart', text: '❤' },
-      { id: 'end', text: 'Конец' },
-    ],
+    buttons: [{ id: 'end', text: 'Счастливый Конец' }],
     hidden: true,
   },
 ]
@@ -209,23 +208,13 @@ function App() {
   const root = useRef<HTMLDivElement>(null)
   const [blocks, setBlocks] = useState<Block[]>(initialBlocks)
   const [isAuthed, setIsAuthed] = useState(false)
+  const [liked, setLiked] = useState<Set<string>>(new Set())
 
   const scrollToNext = (section: Element | null) => {
     const nextSection = section?.nextElementSibling as HTMLElement | null
     if (nextSection) {
       gsap.to(window, {
         scrollTo: { y: nextSection, autoKill: false },
-        duration: 1.4,
-        ease: 'power2.inOut',
-      })
-    }
-  }
-
-  const scrollToTop = () => {
-    const firstSection = root.current?.firstElementChild as HTMLElement | null
-    if (firstSection) {
-      gsap.to(window, {
-        scrollTo: { y: firstSection, autoKill: false },
         duration: 1.4,
         ease: 'power2.inOut',
       })
@@ -241,9 +230,25 @@ function App() {
       scrollToNext(section)
     } else if (id === 'start') {
       scrollToNext(section)
-    } else if (id === 'heart') {
+    } else if (id === 'end') {
       launchHearts(element)
     }
+  }
+
+  const toggleLike = (alt: string, element: HTMLElement) => {
+    const wasLiked = liked.has(alt)
+    if (!wasLiked) {
+      launchHearts(element, 10)
+    }
+    setLiked((prev) => {
+      const next = new Set(prev)
+      if (next.has(alt)) {
+        next.delete(alt)
+      } else {
+        next.add(alt)
+      }
+      return next
+    })
   }
 
   const handleDeclineHover = (element: HTMLElement, clientX: number, clientY: number) => {
@@ -332,7 +337,7 @@ function App() {
           <div ref={root}>
 {blocks
           .filter((block) => !block.hidden)
-          .map((block) => {
+          .map((block, index) => {
             const buttonsContent = block.buttons?.map((button) =>
                   button.id === 'next' ? (
                     <button
@@ -362,17 +367,25 @@ function App() {
                     <button
                       className="section-button section-button--end"
                       key={button.id}
-                      onClick={scrollToTop}
+                      onClick={(event) =>
+                        handleButtonClick(button.id, event.currentTarget)
+                      }
                     >
                       <span>{button.text}</span>
+                      <svg
+                        className="section-button__icon section-button__icon--heart"
+                        viewBox="0 0 24 24"
+                        width="32"
+                        height="22"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 21C12 21 4 14.6 4 9.5 4 6 6.5 4 9 4c1.5 0 2.7.8 3 1.9C12.3 4.8 13.5 4 15 4c2.5 0 5 2 5 5.5 0 5.1-8 11.5-8 11.5Z" />
+                      </svg>
                     </button>
                   ) : (
                     <button
-                      className={
-                        button.id === 'heart'
-                          ? 'section-button section-button--heart'
-                          : 'section-button'
-                      }
+                      className="section-button"
                       key={button.id}
                       onClick={(event) =>
                         handleButtonClick(button.id, event.currentTarget)
@@ -414,7 +427,18 @@ function App() {
             )
 
             const title = (
-              <p className="section-title">{block.title}</p>
+              <>
+                {!block.start && (
+                  <span className="section-ornament" aria-hidden="true">
+                    <span className="section-ornament__line" />
+                    <span className="section-ornament__icon">
+                      {ORNAMENTS[index % ORNAMENTS.length]}
+                    </span>
+                    <span className="section-ornament__line" />
+                  </span>
+                )}
+                <p className="section-title">{block.title}</p>
+              </>
             )
 
             return (
@@ -423,29 +447,125 @@ function App() {
                   block.buttons?.some((button) => button.id === 'end')
                     ? ' section--end'
                     : ''
-                }`}
+                }${!block.start && !block.buttons?.some((button) => button.id === 'end') ? ' section--card' : ''}`}
                 key={block.alt}
               >
                 {block.start ? (
-                  <>
+                  <div className="story-card">
+                    <span className="story-badge" aria-hidden="true">
+                      🍂
+                    </span>
                     <div className="section-inner">{title}</div>
-                    <img className="section-img" src={block.img} alt={block.alt} />
+                    <div className="section-img-wrap">
+                        <img
+                          className="section-img"
+                          src={block.img}
+                          alt={block.alt}
+                        />
+                        {!block.start && (
+                          <span className="section-img-alt">{block.alt}</span>
+                        )}
+                        {!block.start && (
+                          <button
+                            className={`section-like${
+                              liked.has(block.alt) ? ' section-like--liked' : ''
+                            }`}
+                            type="button"
+                            aria-label="Лайк"
+                            onClick={(event) =>
+                              toggleLike(block.alt, event.currentTarget)
+                            }
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              width="22"
+                              height="18"
+                              fill="currentColor"
+                              aria-hidden="true"
+                            >
+                              <path d="M12 21C12 21 4 14.6 4 9.5 4 6 6.5 4 9 4c1.5 0 2.7.8 3 1.9C12.3 4.8 13.5 4 15 4c2.5 0 5 2 5 5.5 0 5.1-8 11.5-8 11.5Z" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
                     {buttons}
-                  </>
+                  </div>
                 ) : block.buttons?.some((button) => button.id === 'end') ? (
-                  <>
+                  <div className="story-card">
                     <div className="section-inner">{title}</div>
-                    <img className="section-img" src={block.img} alt={block.alt} />
-                    <div className="section-buttons">{buttonsContent}</div>
-                  </>
+                    <div className="section-img-wrap">
+                        <img
+                          className="section-img"
+                          src={block.img}
+                          alt={block.alt}
+                        />
+                        {!block.start && (
+                          <span className="section-img-alt">{block.alt}</span>
+                        )}
+                        {!block.start && (
+                          <button
+                            className={`section-like${
+                              liked.has(block.alt) ? ' section-like--liked' : ''
+                            }`}
+                            type="button"
+                            aria-label="Лайк"
+                            onClick={(event) =>
+                              toggleLike(block.alt, event.currentTarget)
+                            }
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              width="22"
+                              height="18"
+                              fill="currentColor"
+                              aria-hidden="true"
+                            >
+                              <path d="M12 21C12 21 4 14.6 4 9.5 4 6 6.5 4 9 4c1.5 0 2.7.8 3 1.9C12.3 4.8 13.5 4 15 4c2.5 0 5 2 5 5.5 0 5.1-8 11.5-8 11.5Z" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    {buttons}
+                  </div>
                 ) : (
-                  <>
-                    <img className="section-img" src={block.img} alt={block.alt} />
+                  <div className="block-card">
+                    <div className="section-img-wrap">
+                        <img
+                          className="section-img"
+                          src={block.img}
+                          alt={block.alt}
+                        />
+                        {!block.start && (
+                          <span className="section-img-alt">{block.alt}</span>
+                        )}
+                        {!block.start && (
+                          <button
+                            className={`section-like${
+                              liked.has(block.alt) ? ' section-like--liked' : ''
+                            }`}
+                            type="button"
+                            aria-label="Лайк"
+                            onClick={(event) =>
+                              toggleLike(block.alt, event.currentTarget)
+                            }
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              width="22"
+                              height="18"
+                              fill="currentColor"
+                              aria-hidden="true"
+                            >
+                              <path d="M12 21C12 21 4 14.6 4 9.5 4 6 6.5 4 9 4c1.5 0 2.7.8 3 1.9C12.3 4.8 13.5 4 15 4c2.5 0 5 2 5 5.5 0 5.1-8 11.5-8 11.5Z" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
                     <div className="section-inner">
                       {title}
                       {buttons}
                     </div>
-                  </>
+                  </div>
                 )}
                 {block.heroScroll && (
                   <div className="hero-scroll" aria-hidden="true">
