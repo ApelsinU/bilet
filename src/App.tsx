@@ -15,6 +15,8 @@ import monkey_look from './assets/monkey_look.jpg'
 import monkey_forest from './assets/monkey_forest.jpg'
 import two_monkey_look2 from './assets/two_monkey_look2.jpg'
 import monkey_with_deer from './assets/monkey_with_deer.webp'
+import alpaks from './assets/alpaks.jpg'
+import monkey_kapibara from './assets/monkey_kapibara.jpg'
 import monkey_eat from './assets/monkey_eat.jpg'
 import monkey_eat2 from './assets/monkey_eat2.jpg'
 import monkeys_kiss from './assets/monkeys_kiss.jpg'
@@ -159,17 +161,33 @@ const initialBlocks: Block[] = [
     hidden: true,
   },
   {
-    img: monkey_eat,
-    alt: 'Обезьянка проголодалась',
-    title: 'Ох, кажется, Обезьянки проголодались! Это не удивительно, ведь они так много прыгали. Нужно скорее искать обед!',
+    img: alpaks,
+    alt: 'Альпака',
+    title: 'А это что за звери? Говорят "Аль Пака" - иатальянцы, наверное... Основательно они подготовились к холодам - и шапки, и шубы себе пошили. Нужно срочно потрогать их!',
     heroScroll: true,
     buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
   },
   {
+    img: monkey_kapibara,
+    alt: 'Обезьянки и капибара',
+    title: 'Эх, вот бы еще Капибару увидеть... Жаль, но наш климат для них слишком не комфортный. Но мы всё таки представим, что наши герои встретили и этих чудесных животных.',
+    heroScroll: true,
+    buttons: [{ id: 'next', text: 'дальше' }],
+    hidden: true,
+  },
+  {
+    img: monkey_eat,
+    alt: 'Обезьянка проголодалась',
+    title: 'Ох, кажется, Обезьянки проголодались! Это не удивительно, ведь они так много прыгали. Нужно скорее искать обед!',
+    heroScroll: true,
+    buttons: [{ id: 'next', text: 'обед!' }],
+    hidden: true,
+  },
+  {
     img: monkey_eat2,
     alt: 'Обезьянка кушает',
-    title: 'Это должно быть вкусно. Приятного аппетита!',
+    title: 'Наши Обезьянки удобно расположились под раскидистым деревом и, наслаждаясь прекрасным видом дикой природы, приступили к трапезе. Это должно быть вкусно. Приятного аппетита!',
     heroScroll: true,
     buttons: [{ id: 'next', text: 'дальше' }],
     hidden: true,
