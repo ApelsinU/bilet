@@ -23,6 +23,7 @@ import monkeys_kiss from './assets/monkeys_kiss.jpg'
 import { launchConfetti } from './confetti'
 import { launchHearts } from './hearts'
 import FallingLeaves from './FallingLeaves'
+import LoginScreen from './LoginScreen'
 import './App.css'
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
@@ -42,7 +43,7 @@ const initialBlocks: Block[] = [
     img: monkey_preview,
     alt: 'Начало',
     title:
-        'Один день из жизни Обезьянки',
+        'Один день из жизни Обезьянки Риты',
     buttons: [
       {
         id: 'start',
@@ -207,6 +208,7 @@ const initialBlocks: Block[] = [
 function App() {
   const root = useRef<HTMLDivElement>(null)
   const [blocks, setBlocks] = useState<Block[]>(initialBlocks)
+  const [isAuthed, setIsAuthed] = useState(false)
 
   const scrollToNext = (section: Element | null) => {
     const nextSection = section?.nextElementSibling as HTMLElement | null
@@ -322,7 +324,12 @@ function App() {
 
   return (
     <>
-      <div ref={root}>
+      <FallingLeaves />
+      {!isAuthed ? (
+        <LoginScreen onSuccess={() => setIsAuthed(true)} />
+      ) : (
+        <>
+          <div ref={root}>
 {blocks
           .filter((block) => !block.hidden)
           .map((block) => {
@@ -449,7 +456,8 @@ function App() {
             )
           })}
       </div>
-      <FallingLeaves />
+        </>
+      )}
     </>
   )
 }
